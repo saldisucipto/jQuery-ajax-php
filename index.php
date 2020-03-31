@@ -54,6 +54,7 @@
 
 <script>
     $(document).ready(function() {
+        // Memanggil fungsi untuk menampilkan data 
         load_data();
 
         // fungsi untuk me load data dari database 
@@ -66,9 +67,21 @@
                 }
             });
         }
+
+        // function user dialog untuk menampilkan form inputan
         $("#user_dialog").dialog({
             autoOpen: false,
             width: 400
+        });
+
+        // function on click modal dialog jquery 
+        $('#add').click(function() {
+            $('#user_dialog').attr('title', 'Add Data');
+            $('#action').val('insert');
+            $('#form_action').val('Insert');
+            $('#user_form')[0].reset();
+            $('#form_action').attr('disabled', false);
+            $("#user_dialog").dialog('open');
         });
 
 
