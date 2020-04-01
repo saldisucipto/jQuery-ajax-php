@@ -13,8 +13,7 @@ $output = '
     <tr>
         <th>First Name</th>
         <th>Last Name</th>  
-        <th>Edit</th>
-        <th>Delete</th>
+        <th colspan="2" align="center">Action</th>
     </tr>
 ';
 if ($total_row > 0) {
@@ -23,8 +22,8 @@ if ($total_row > 0) {
         <tr>
             <td width="40%">' . $row["first_name"] . '</td>
             <td width="40%">' . $row["last_name"] . '</td>
-            <td width="10%">
-                 <button type="button" name="edit" class="btn btn-primary btn-xs edit" id=" ' . $row["id"] . ' " >Edit</button>
+            <td width="10%" align="center">
+                <button type="button" name="edit" class="btn btn-primary btn-xs edit" id=" ' . $row["id"] . ' " >Edit</button>
             </td>
             <td width="10%">
                  <button type="button" name="delete" class="btn btn-danger btn-xs delete" id=" ' . $row["id"] . ' " >Delete</button>

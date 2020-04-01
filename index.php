@@ -28,12 +28,12 @@
             <form id="user_form" method="post">
                 <div class="form-group">
                     <label> Enter First Name </label>
-                    <input type="text" name="first_name" id="first_name" class="form-control">
+                    <input type="text" name="first_name" id="first_name" class="form-control" required>
                     <span id="error_first_name" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label> Enter Last Name </label>
-                    <input type="text" name="last_name" id="last_name" class="form-control">
+                    <input type="text" name="last_name" id="last_name" class="form-control" required>
                     <span id="error_last_name" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -44,6 +44,9 @@
             </form>
             <div id="action_alert" title="Action">
 
+            </div>
+            <div id="delete_confirmation" title="Confirmation">
+                <p>Are You Sure, Want Delete the Data?</p>
             </div>
 
         </div>
@@ -84,6 +87,112 @@
             $("#user_dialog").dialog('open');
         });
 
+        // function insert on dialog form
+        $('#user_form').on('submit', function(event) {
+            event.preventDefault();
+            /**
+            fungsi eevnt.preventDefault adalah sebuah method yang mencegah event bawaan dari sebuah DOM, misalkan tag "a href" jika kita klik akan melakukan reload dan memathakn fungsi jQuery yang berjalan */
+            var error_first_name = '';
+            var error_last_name = '';
+
+            // membuat sebuah fungsi validasi untuk form inptan 
+            if ($('#first_name').val() == '') {
+                $('#error_first_name').text('First Name is Required');
+                $('#first_name').css('border-color', 'red');
+            } else {
+                $('#error_first_name').text('');
+                $('#first_name').css('border-color', 'blue');
+            }
+            if ($('#last_name').val() == '') {
+                $('#error_last_name').text('Last Name is Required');
+                $('#last_name').css('border-color', 'red');
+            } else {
+                $('error_last_name').text('');
+                $('#last_name').css('border-color', '');
+            }
+
+            // setelah di validasi lanjut untuk proses inputan menggunakn ajax 
+            if (error_first_name != '' || error_last_name != '') {
+                return false;
+            } else {
+                $('#form_action').attr('disabled', 'disabled');
+                var form_data = $(this).serialize();
+                /**
+                Fungsi serialize adalah fungsi untuk merubah value pada form inptan menjadi type data array untuk di kirimkan ke database
+                 */
+                $.ajax({
+                    url: 'action.php',
+                    method: 'POST',
+                    data: form_data,
+                    success: function(data) {
+                        $('#user_dialog').dialog('close');
+                        $('#action_alert').html(data);
+                        $('#action_alert').dialog('open');
+                        load_data();
+                        $('#form_action').attr('disabled', false);
+                    }
+                });
+            }
+        });
+        $('#action_alert').dialog({
+            autoOpen: false
+        });
+
+        $(document).on('click', '.edit', function() {
+            var id = $(this).attr('id');
+            var action = 'fetch_single';
+            $.ajax({
+                url: 'action.php',
+                method: 'POST',
+                data: {
+                    id: id,
+                    action: action
+                },
+                dataType: "json",
+                success: function(data) {
+                    $('#first_name').val(data.first_name);
+                    $('#last_name').val(data.last_name);
+                    $('#user_dialog').attr('title', 'Edit Data');
+                    $('#action').val('update');
+                    $('#hidden_id').val(id);
+                    $('#form_action').val('Update');
+                    $('#user_dialog').dialog('open');
+                }
+            })
+        })
+
+        $('#delete_confirmation').dialog({
+            autoOpen: false,
+            modal: true,
+            buttons: {
+                Ok: function() {
+                    var id = $(this).data('id');
+                    var action = 'delete';
+                    $.ajax({
+                        url: 'action.php',
+                        method: 'POST',
+                        data: {
+                            id: id,
+                            action: action
+                        },
+                        success: function(data) {
+                            $('#delete_confirmation').dialog('close');
+                            $('#action_alert').html(data);
+                            $('#action_alert').dialog('open');
+                            load_data();
+                        }
+
+                    });
+                },
+                Cancel: function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $(document).on('click', '.delete', function() {
+            var id = $(this).attr("id");
+            $('#delete_confirmation').data('id', id).dialog('open');
+        });
 
     });
 </script>
